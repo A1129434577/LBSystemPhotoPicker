@@ -10,6 +10,9 @@
 
 
 @interface LBSystemPhotoPicker()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@property (nonatomic,assign)BOOL animated;
+
+@property (nonatomic,copy, nullable) void (^ completion)(void);
 @property (nonatomic,weak)UIViewController *viewController;
 @property (nonatomic,strong)UIAlertController *imagePickerActionsheet;
 @end
@@ -24,6 +27,7 @@
     return self;
 }
 -(void)addImagePickerSourceType:(UIImagePickerControllerSourceType)sourceType title:(NSString *)title{
+    
     __weak typeof(self) weakSelf = self;
     [self.imagePickerActionsheet addAction:[UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
@@ -57,20 +61,23 @@
         imagePicker.modalPresentationStyle = self.modalPresentationStyle;
         imagePicker.delegate = self;
         imagePicker.sourceType = sourceType;
-        [weakSelf.viewController presentViewController:imagePicker animated:YES completion:NULL];
+        [weakSelf.viewController presentViewController:imagePicker animated:weakSelf.animated completion:weakSelf.completion];
+        weakSelf.imagePicker = imagePicker;
 
     }]];
 }
--(void)showInViewController:(UIViewController *)viewController{
+-(void)showInViewController:(UIViewController *)viewController animated:(BOOL)flag completion:(void (^ _Nullable)(void))completion{
+    _animated = flag;
+    _completion = completion;
     _viewController = viewController;
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.onlySourceType) {
+        if (weakSelf.onlySourceType) {
             UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
-            imagePicker.modalPresentationStyle = self.modalPresentationStyle;
-            imagePicker.delegate = self;
-            imagePicker.sourceType = self.onlySourceType.integerValue;
-            [weakSelf.viewController presentViewController:imagePicker animated:YES completion:NULL];
+            imagePicker.modalPresentationStyle = weakSelf.modalPresentationStyle;
+            imagePicker.delegate = weakSelf;
+            imagePicker.sourceType = weakSelf.onlySourceType.integerValue;
+            [weakSelf.viewController presentViewController:imagePicker animated:weakSelf.animated completion:weakSelf.completion];
         }else{
             [viewController presentViewController:weakSelf.imagePickerActionsheet animated:YES completion:NULL];
         }

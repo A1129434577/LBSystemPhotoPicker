@@ -34,7 +34,7 @@
         NSLog(@"%@",errorDesc);
     };
 //    picker.onlySourceType = @(UIImagePickerControllerSourceTypePhotoLibrary);
-    [picker showInViewController:self];
+    [picker showInViewController:self animated:NO completion:nil];
 }
 
 @end
