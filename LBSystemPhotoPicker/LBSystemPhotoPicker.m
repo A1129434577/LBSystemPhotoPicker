@@ -70,18 +70,16 @@
     _animated = flag;
     _completion = completion;
     _viewController = viewController;
-    __weak typeof(self) weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (weakSelf.onlySourceType) {
-            UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
-            imagePicker.modalPresentationStyle = weakSelf.modalPresentationStyle;
-            imagePicker.delegate = weakSelf;
-            imagePicker.sourceType = weakSelf.onlySourceType.integerValue;
-            [weakSelf.viewController presentViewController:imagePicker animated:weakSelf.animated completion:weakSelf.completion];
-        }else{
-            [viewController presentViewController:weakSelf.imagePickerActionsheet animated:YES completion:NULL];
-        }
-    });
+    
+    if (self.onlySourceType) {
+        UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
+        imagePicker.modalPresentationStyle = self.modalPresentationStyle;
+        imagePicker.delegate = self;
+        imagePicker.sourceType = self.onlySourceType.integerValue;
+        [self.viewController presentViewController:imagePicker animated:self.animated completion:self.completion];
+    }else{
+        [viewController presentViewController:self.imagePickerActionsheet animated:YES completion:NULL];
+    }
 }
 
 #pragma mark PhotoSelectButtonDelegate

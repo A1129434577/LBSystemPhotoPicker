@@ -33,8 +33,8 @@
     picker.didFinishPickingMedia = ^(NSDictionary * _Nullable info, NSString * _Nullable errorDesc) {
         NSLog(@"%@",errorDesc);
     };
-//    picker.onlySourceType = @(UIImagePickerControllerSourceTypePhotoLibrary);
-    [picker showInViewController:self animated:NO completion:nil];
+    picker.onlySourceType = @(UIImagePickerControllerSourceTypePhotoLibrary);
+    [picker showInViewController:self animated:YES completion:nil];
 }
 
 @end
