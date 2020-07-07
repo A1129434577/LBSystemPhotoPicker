@@ -54,6 +54,7 @@
         }
         
         UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
+        imagePicker.modalPresentationStyle = self.modalPresentationStyle;
         imagePicker.delegate = self;
         imagePicker.sourceType = sourceType;
         [weakSelf.viewController presentViewController:imagePicker animated:YES completion:NULL];
@@ -64,7 +65,15 @@
     _viewController = viewController;
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [viewController presentViewController:weakSelf.imagePickerActionsheet animated:YES completion:NULL];
+        if (self.onlySourceType) {
+            UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
+            imagePicker.modalPresentationStyle = self.modalPresentationStyle;
+            imagePicker.delegate = self;
+            imagePicker.sourceType = self.onlySourceType.integerValue;
+            [weakSelf.viewController presentViewController:imagePicker animated:YES completion:NULL];
+        }else{
+            [viewController presentViewController:weakSelf.imagePickerActionsheet animated:YES completion:NULL];
+        }
     });
 }
 
