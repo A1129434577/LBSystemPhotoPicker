@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LBSystemPhotoPicker : NSObject
 
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
-@property (nonatomic, copy, nullable)void (^didFinishPickingMedia)(NSDictionary * _Nullable info,NSString * _Nullable errorDesc);
+@property (nonatomic, copy, nullable)void (^didFinishPickingMedia)(NSDictionary<UIImagePickerControllerInfoKey, id> *_Nullable,NSString * _Nullable errorDesc);
 @property (nonatomic, strong, nullable) NSNumber *onlySourceType;//UIImagePickerControllerSourceType，使用该属性将不弹出actionSheet选择器
 @property(nonatomic, assign) UIModalPresentationStyle modalPresentationStyle;
 

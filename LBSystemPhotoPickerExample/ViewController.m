@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "LBSystemPhotoPicker.h"
+
 @interface ViewController ()
 
 @end
@@ -17,12 +18,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-}
-
--(void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
     [self showPhotoPicker];
 }
+
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     [self showPhotoPicker];
 }
@@ -33,7 +31,7 @@
     picker.didFinishPickingMedia = ^(NSDictionary * _Nullable info, NSString * _Nullable errorDesc) {
         NSLog(@"%@",errorDesc);
     };
-    picker.onlySourceType = @(UIImagePickerControllerSourceTypePhotoLibrary);
+//    picker.onlySourceType = @(UIImagePickerControllerSourceTypePhotoLibrary);
     [picker showInViewController:self animated:YES completion:nil];
 }
 
