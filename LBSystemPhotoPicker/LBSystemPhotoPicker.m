@@ -7,6 +7,9 @@
 //
 
 #import "LBSystemPhotoPicker.h"
+#import <objc/runtime.h>
+
+static NSString *LBSystemPhotoPickerKey = @"LBSystemPhotoPickerKey";
 
 
 @interface LBSystemPhotoPicker()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
@@ -37,18 +40,18 @@
     self.imagePicker.modalPresentationStyle = modalPresentationStyle;
 }
 -(void)addImagePickerSourceType:(UIImagePickerControllerSourceType)sourceType title:(NSString *)title{
-    
+    __weak typeof(self) weakSelf = self;
     [_imagePickerActionsheet addAction:[UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         if (sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
             if(![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
             {
-                self.didFinishPickingMedia?
-                self.didFinishPickingMedia(nil,@"您的设备不支持相册"):NULL;
+                weakSelf.didFinishPickingMedia?
+                weakSelf.didFinishPickingMedia(nil,@"您的设备不支持相册"):NULL;
                 return;
             }else if ([PHPhotoLibrary authorizationStatus] != PHAuthorizationStatusAuthorized
                       && [PHPhotoLibrary authorizationStatus] != PHAuthorizationStatusNotDetermined){
-                self.didFinishPickingMedia?
-                self.didFinishPickingMedia(nil,@"相册权限受限,请在隐私设置中启用相册访问"):NULL;
+                weakSelf.didFinishPickingMedia?
+                weakSelf.didFinishPickingMedia(nil,@"相册权限受限,请在隐私设置中启用相册访问"):NULL;
                 return;
             }
         }
@@ -56,22 +59,25 @@
         if (sourceType == UIImagePickerControllerSourceTypeCamera) {
             if(![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
             {
-                self.didFinishPickingMedia?
-                self.didFinishPickingMedia(nil,@"您的设备不支持相机"):NULL;
+                weakSelf.didFinishPickingMedia?
+                weakSelf.didFinishPickingMedia(nil,@"您的设备不支持相机"):NULL;
                 return;
             }else if ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] != AVAuthorizationStatusAuthorized
                       && [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] !=  AVAuthorizationStatusNotDetermined) {
-                self.didFinishPickingMedia?
-                self.didFinishPickingMedia(nil,@"相机调用受限,请在隐私设置中启用相机访问"):NULL;
+                weakSelf.didFinishPickingMedia?
+                weakSelf.didFinishPickingMedia(nil,@"相机调用受限,请在隐私设置中启用相机访问"):NULL;
                 return;
             }
         }
         
-        self.imagePicker.sourceType = sourceType;
-        [self.viewController presentViewController:self.imagePicker animated:self.animated completion:self.imagePickerDidShowCompletion];
+        weakSelf.imagePicker.sourceType = sourceType;
+        [weakSelf.viewController presentViewController:weakSelf.imagePicker animated:weakSelf.animated completion:weakSelf.imagePickerDidShowCompletion];
     }]];
 }
 -(void)showInViewController:(UIViewController *)viewController animated:(BOOL)flag completion:(void (^ _Nullable)(void))completion{
+    //让viewController持有self，防止self过早释放
+    objc_setAssociatedObject(viewController, &LBSystemPhotoPickerKey, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    
     _animated = flag;
     _imagePickerDidShowCompletion = completion;
     _viewController = viewController;
@@ -96,5 +102,4 @@
     //        imageData = UIImageJPEGRepresentation([UIImage imageWithData:imageData], 0.1);
     //    }
 }
-
 @end
